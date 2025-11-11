@@ -1,6 +1,14 @@
-def main():
-    print("Hello from b25-tour!")
+import seaborn as sns
 
+from data import df
 
-if __name__ == "__main__":
-    main()
+from shiny import App,render,ui
+
+app_ui = ui.page_sidebar(
+    ui.sidebar(
+        ui.input_numeric("numeric","Numeric input",1,min=0,max=100),
+        ui.input
+
+        )
+    )
+)
