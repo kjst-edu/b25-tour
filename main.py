@@ -1,3 +1,4 @@
+
 import seaborn as sns
 
 from data import df
@@ -18,3 +19,4 @@ app_ui = ui.page_sidebar(
 )
 
 
+app=App(app_ui,None)
