@@ -35,7 +35,6 @@ def server(input,output,session):
         
         # 合計が100でない場合、警告メッセージを返す
         if total_weight != 100:
-            # ui.div や ui.h5 などでUI要素を作成し、スタイルで色を指定
             return ui.div(
                 ui.p(f"＊入力値の合計が100ではないため，正確なランキングが作成されない場合があります。現在の入力値の合計：({total_weight})", 
                       style="color: red; font-size: 85%; ")
@@ -45,23 +44,25 @@ def server(input,output,session):
 
     @render.data_frame
     def ranking_df():
-         # ★ 選択された地域リストを取得
+         # 選択された地域リストを取得
         selected = input.selectize()
 
-        # ★ 地域が選ばれていればフィルタ、選ばれていなければ全部
+        # 地域が選ばれていればフィルタ、選ばれていなければ全部
         if selected:
             filtered = df[df["region"].isin(selected)].copy()
         else:
             filtered = df.copy()
         
-        filtered["weighted_score"] = (0.01*input.a_weight() * filtered["a"] +
-                                      0.01*input.b_weight() * filtered["b"] +
-                                      0.01*input.c_weight() * filtered["c"] +
-                                      0.01*input.d_weight() * filtered["d"] 
+        # 4項目のinputを利用し，加重平均を取る
+        filtered["weighted_score"] = (0.01 * input.a_weight() * filtered["a"] +
+                                      0.01 * input.b_weight() * filtered["b"] +
+                                      0.01 * input.c_weight() * filtered["c"] +
+                                      0.01 * input.d_weight() * filtered["d"] 
                                       )
         
         filtered = filtered.sort_values(by="weighted_score", ascending=False)
 
+        # ranking_dfの定義し直し
         ranking_df = filtered[["country","region","weighted_score","a","b","c","d"]].round(2)
         return render.DataTable(ranking_df)
 
