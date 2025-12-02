@@ -36,7 +36,7 @@ def server(input,output,session):
         # 合計が100でない場合、警告メッセージを返す
         if total_weight != 100:
             return ui.div(
-                ui.p(f"＊入力値の合計が100ではないため，正確なランキングが作成されない場合があります。現在の入力値の合計：({total_weight})", 
+                ui.p(f"＊入力値の合計が100ではないため，正確なランキングが作成されない場合があります。現在の入力値の合計：{total_weight}", 
                       style="color: red; font-size: 85%; ")
             )
         # 合計が100であれば何も表示しない
