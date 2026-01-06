@@ -54,16 +54,18 @@ def server(input,output,session):
             filtered = df.copy()
         
         # 4項目のinputを利用し，加重平均を取る
-        filtered["weighted_score"] = (0.01 * input.a_weight() * filtered["治安指数"] +
+        filtered["合計スコア"] = (0.01 * input.a_weight() * filtered["治安指数"] +
                                       0.01 * input.b_weight() * filtered["衛生指数"] +
                                       0.01 * input.c_weight() * filtered["国際評価指数"] +
                                       0.01 * input.d_weight() * filtered["気候指数"] 
                                       )
         
-        filtered = filtered.sort_values(by="weighted_score", ascending=False)
+        filtered = filtered.sort_values(by="合計スコア", ascending=False)
+
+        filtered["順位"] = filtered["合計スコア"].rank(ascending=False,method="dense").astype(int)
 
         # ranking_dfの定義し直し
-        ranking_df = filtered[["国名","地域","weighted_score","治安指数","衛生指数","国際評価指数","気候指数"]].round(2)
+        ranking_df = filtered[["順位","国名","地域","合計スコア","治安指数","衛生指数","国際評価指数","気候指数"]].round(2)
         return render.DataTable(ranking_df)
 
 app=App(app_ui,server)
