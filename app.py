@@ -7,7 +7,9 @@ from shiny import App,render,ui,reactive
 
 import matplotlib.pyplot as plt
 
-labels = ["治安" , "衛生" , "国際評価" , "気候"]
+plt.rcParams["font.family"] = "MS Gothic"
+
+labels = ["治安指数" , "衛生指数" , "国際評価指数" , "気候指数"]
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
@@ -18,13 +20,14 @@ app_ui = ui.page_sidebar(
 
         ui.output_ui("warning_message"),
     
-        ui.input_selectize("selectize","地域を選択してください。",{"ヨーロッパ":"ヨーロッパ","アジア・オセアニア":"アジア・オセアニア","アメリカ":"アメリカ","中東・アフリカ":"中東・アフリカ"},
+        ui.input_selectize("selectize","地域を選択してください。（絞り込み）",{"ヨーロッパ":"ヨーロッパ","アジア・オセアニア":"アジア・オセアニア","アメリカ":"アメリカ","中東・アフリカ":"中東・アフリカ"},
                            multiple=True,),
 
-        ui.input_select("国名","国を選択してください",choices=sorted(df["国名"].unique().tolist()))
+        ui.input_select("国名" , "国を選択してください。（グラフが表示されます。）" , choices=df["国名"].tolist(), selected=df["国名"].iloc[0])
     ),
     ui.output_data_frame("ranking_df"),
-    title="観光",
+    ui.output_plot("barplot"),
+    title="世界各国の観光おすすめランキング",
 )
 
 
@@ -86,9 +89,9 @@ def server(input,output,session):
 
         fig, ax = plt.subplots(figsize = (5,4))
         ax.bar(labels,values)
-        ax.set_ylim(0,max(values)*1.2)
+        ax.set_ylim(0,80)
         ax.set_ylabel("スコア")
-        ax.set_title(input.country())
+        ax.set_title(input.国名())
 
         return fig  
 
