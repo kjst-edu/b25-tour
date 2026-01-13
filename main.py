@@ -3,7 +3,11 @@ import seaborn as sns
 
 from data import df
 
-from shiny import App,render,ui
+from shiny import App,render,ui,reactive
+
+import matplotlib.pyplot as plt
+
+labels = ["治安" , "衛生" , "国際評価" , "気候"]
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
@@ -16,6 +20,8 @@ app_ui = ui.page_sidebar(
     
         ui.input_selectize("selectize","地域を選択してください。",{"ヨーロッパ":"ヨーロッパ","アジア・オセアニア":"アジア・オセアニア","アメリカ":"アメリカ","中東・アフリカ":"中東・アフリカ"},
                            multiple=True,),
+
+        ui.input_select("国名","国を選択してください",choices=sorted(df["国名"].unique().tolist()))
     ),
     ui.output_data_frame("ranking_df"),
     title="観光",
@@ -67,6 +73,24 @@ def server(input,output,session):
         # ranking_dfの定義し直し
         ranking_df = filtered[["順位","国名","地域","合計スコア","治安指数","衛生指数","国際評価指数","気候指数"]].round(2)
         return render.DataTable(ranking_df)
+    
+    @reactive.calc
+    def selected_row():
+        return df[df["国名"] == input.国名()].iloc[0]
+    
+    @output
+    @render.plot 
+    def barplot():  
+        row = selected_row()
+        values = [row[l] for l in labels]
+
+        fig, ax = plt.subplots(figsize = (5,4))
+        ax.bar(labels,values)
+        ax.set_ylim(0,max(values)*1.2)
+        ax.set_ylabel("スコア")
+        ax.set_title(input.country())
+
+        return fig  
 
 app=App(app_ui,server)
 #%%
