@@ -7,7 +7,13 @@ from shiny import App,render,ui,reactive
 
 import matplotlib.pyplot as plt
 
-plt.rcParams["font.family"] = "MS Gothic"
+plt.rcParams["font.family"] = [
+    "MS Gothic",
+    "Meiryo",
+    "Hiragino Sans",
+    "Noto Sans CJK JP"
+]
+
 
 labels = ["治安指数" , "衛生指数" , "国際評価指数" , "気候指数"]
 
